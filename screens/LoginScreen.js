@@ -1,15 +1,55 @@
-import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { 
+  View, 
+  TextInput, 
+  TouchableOpacity, 
+  Text, 
+  StyleSheet, 
+  ActivityIndicator, 
+  ImageBackground, 
+  Animated 
+} from 'react-native';
 
 export default function LoginScreen({ navigation }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false); // Estado para la carga
-  const [error, setError] = useState(null); // Estado para mostrar errores
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const shakeAnimation = useRef(new Animated.Value(0)).current;
+
+  // Función para iniciar la animación de vibración
+  const triggerShake = () => {
+    Animated.sequence([
+      Animated.timing(shakeAnimation, {
+        toValue: 10,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimation, {
+        toValue: -10,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimation, {
+        toValue: 0,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
 
   const handleLogin = async () => {
-    setLoading(true);
+    // Reiniciar estados
     setError(null);
+    setLoading(true);
+
+    // Validaciones básicas
+    if (!username || !password) {
+      setLoading(false);
+      setError('Todos los campos son obligatorios.');
+      triggerShake();
+      return;
+    }
 
     try {
       const response = await fetch('https://fakestoreapi.com/auth/login', {
@@ -24,77 +64,124 @@ export default function LoginScreen({ navigation }) {
       });
 
       const data = await response.json();
-      setLoading(false);
 
       if (response.ok) {
-        // Si la respuesta es correcta, navegar a la pantalla de productos
         console.log('Login Exitoso:', data);
         navigation.navigate('ProductList');
       } else {
-        // Si hay un error, mostrar mensaje
-        setError('Credenciales incorrectas o error en el servidor');
+        setError('Credenciales incorrectas. Por favor, intenta de nuevo.');
+        triggerShake();
       }
     } catch (err) {
+      setError('Hubo un problema con la conexión. Intenta nuevamente.');
+      triggerShake();
+    } finally {
       setLoading(false);
-      setError('Hubo un problema con la conexión');
     }
   };
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Iniciar Sesión</Text>
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Usuario"
-        value={username}
-        onChangeText={setUsername}
-      />
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Contraseña"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-      
-      {/* Si está cargando, mostrar el indicador de carga */}
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <Button title="Ingresar" onPress={handleLogin} />
-      )}
+  const handleTextChange = (setter) => (text) => {
+    setter(text);
+    if (error) setError(null);
+  };
 
-      {/* Mostrar errores si los hay */}
-      {error && <Text style={styles.error}>{error}</Text>}
-    </View>
+  return (
+    <ImageBackground source={require('../assets/torrespaine.jpg')} style={styles.background}>
+      <View style={styles.container}>
+        <Animated.View style={[styles.form, { transform: [{ translateX: shakeAnimation }] }]}>
+          <Text style={styles.title}>Iniciar Sesión</Text>
+
+          <TextInput
+            style={[styles.input, error && styles.inputError]}
+            placeholder="Usuario"
+            value={username}
+            onChangeText={handleTextChange(setUsername)}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+
+          <TextInput
+            style={[styles.input, error && styles.inputError]}
+            placeholder="Contraseña"
+            secureTextEntry
+            value={password}
+            onChangeText={handleTextChange(setPassword)}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+
+          {loading ? (
+            <ActivityIndicator size="large" color="#ffffff" />
+          ) : (
+            <TouchableOpacity style={[styles.loginButton, loading && styles.buttonDisabled]} onPress={handleLogin} disabled={loading}>
+              <Text style={styles.loginButtonText}>Ingresar</Text>
+            </TouchableOpacity>
+          )}
+
+          {error && <Text style={styles.error}>{error}</Text>}
+        </Animated.View>
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
+  form: {
+    width: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: 20,
+    borderRadius: 10,
+  },
   title: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: 'bold',
+    color: '#fff',
     marginBottom: 20,
+    textAlign: 'center',
   },
   input: {
     width: '100%',
-    height: 40,
+    height: 45,
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
     marginBottom: 15,
+    backgroundColor: '#fff',
+    fontSize: 16,
+  },
+  inputError: {
+    borderColor: 'red',
+    borderWidth: 2,
+  },
+  loginButton: {
+    backgroundColor: '#0000ff',
+    padding: 12,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  loginButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  buttonDisabled: {
+    backgroundColor: '#aaa',
   },
   error: {
     marginTop: 15,
     color: 'red',
+    textAlign: 'center',
+    fontSize: 16,
   },
 });

@@ -1,10 +1,10 @@
-// ProductDetailScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 
 export default function ProductDetailScreen({ route }) {
   const { productId } = route.params;
   const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchProductDetail();
@@ -12,52 +12,126 @@ export default function ProductDetailScreen({ route }) {
 
   const fetchProductDetail = async () => {
     try {
+      
       const response = await fetch(`https://fakestoreapi.com/products/${productId}`);
       const data = await response.json();
+
       setProduct(data);
+      setLoading(false);
+
     } catch (err) {
       console.error('Error al obtener el detalle del producto', err);
+      setLoading(false);
     }
   };
 
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text style={styles.loadingText}>Cargando productos...</Text>
+      </View>
+    );
+  }
+
   if (!product) {
-    return <Text>Cargando...</Text>;
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.errorText}>Error al cargar el producto.</Text>
+      </View>
+    );
   }
 
   return (
+    
     <ScrollView contentContainerStyle={styles.container}>
       <Image source={{ uri: product.image }} style={styles.productImage} />
-      <Text style={styles.productTitle}>{product.title}</Text>
-      <Text style={styles.productPrice}>${product.price}</Text>
-      <Text style={styles.productDescription}>{product.description}</Text>
+      <View style={styles.card}>
+        <Text style={styles.productTitle}>{product.title}</Text>
+        <Text style={styles.productPrice}>${product.price}</Text>
+      </View>
+      <View style={styles.descriptionCard}>
+        <Text style={styles.sectionTitle}>Descripción</Text>
+        <Text style={styles.productDescription}>{product.description}</Text>
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
+    flexGrow: 1,
+    backgroundColor: '#f9f9f9',
     padding: 20,
+    alignItems: 'center',
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f9f9f9',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#555',
+  },
+  errorText: {
+    fontSize: 18,
+    color: '#ff0000',
+    fontWeight: 'bold',
   },
   productImage: {
-    width: 250,
-    height: 250,
+    width: '100%',
+    height: 300,
+    borderRadius: 15,
+    marginBottom: 20,
+    resizeMode: 'contain',
+  },
+  card: {
+    width: '100%',
+    backgroundColor: '#fff',
+    padding: 15,
     borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 3,
     marginBottom: 20,
   },
   productTitle: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: '#333',
     marginBottom: 10,
+    textAlign: 'center',
   },
   productPrice: {
     fontSize: 20,
     color: '#00A859',
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  descriptionCard: {
+    width: '100%',
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
     marginBottom: 10,
   },
   productDescription: {
     fontSize: 16,
-    color: '#333',
+    color: '#555',
+    lineHeight: 24,
+    textAlign: 'justify',
   },
 });

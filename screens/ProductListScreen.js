@@ -1,11 +1,30 @@
-// ProductListScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, StyleSheet, Image, Alert, ImageBackground } from 'react-native';
+import * as Animatable from 'react-native-animatable';
 
 export default function ProductListScreen({ navigation }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Función para cerrar sesión
+  const handleLogout = () => {
+    Alert.alert(
+      "Cerrar sesión",
+      "¿Estás seguro de que deseas cerrar sesión?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Cerrar sesión",
+          onPress: () => {
+            // Aquí puedes limpiar el estado de usuario o eliminar el token de autenticación.
+            navigation.navigate("Login"); // Redirigir al Login.
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
 
   useEffect(() => {
     fetchProducts();
@@ -23,78 +42,140 @@ export default function ProductListScreen({ navigation }) {
     }
   };
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity
+  const renderItem = ({ item, index }) => (
+    <Animatable.View
+      animation="fadeInUp"
+      delay={index * 100} // Retraso incremental para cada elemento
       style={styles.productContainer}
-      onPress={() => navigation.navigate('ProductDetail', { productId: item.id })}
     >
-      <Image source={{ uri: item.image }} style={styles.productImage} />
-      <Text style={styles.productTitle}>{item.title}</Text>
-      <Text style={styles.productPrice}>${item.price}</Text>
-    </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('ProductDetail', { productId: item.id })}
+        style={styles.productCard}
+      >
+        <Image source={{ uri: item.image }} style={styles.productImage} />
+        <View style={styles.productInfo}>
+          <Text style={styles.productTitle}>{item.title}</Text>
+          <Text style={styles.productPrice}>${item.price}</Text>
+        </View>
+      </TouchableOpacity>
+    </Animatable.View>
   );
 
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
+      <ImageBackground
+        source={require('../assets/torrespaine.jpg')} // Imagen local de fondo
+        style={styles.background}
+      >
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color="#00A859" />
+          <Text style={styles.loadingText}>Cargando productos...</Text>
+        </View>
+      </ImageBackground>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.centered}>
-        <Text>{error}</Text>
-      </View>
+      <ImageBackground
+        source={require('../assets/torrespaine.jpg')} // Imagen local de fondo
+        style={styles.background}
+      >
+        <View style={styles.centered}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      </ImageBackground>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={products}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
-      />
-    </View>
+    <ImageBackground
+      source={require('../assets/torrespaine.jpg')} // Imagen local de fondo
+      style={styles.background}
+    >
+      <View style={styles.container}>
+        <FlatList
+          data={products}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.listContent}
+        />
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
   container: {
     flex: 1,
-    padding: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)', // Fondo semitransparente sobre la imagen de fondo
+    paddingHorizontal: 15,
+    paddingTop: 20,
+  },
+  listContent: {
+    paddingBottom: 20,
   },
   centered: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 18,
+    color: '#ffffff',
+  },
+  errorText: {
+    fontSize: 18,
+    color: '#ff0000',
+    fontWeight: 'bold',
+  },
   productContainer: {
-    flexDirection: 'row',
-    marginBottom: 15,
+    marginBottom: 20,
+    width: '100%',
+    alignItems: 'center',
+  },
+  productCard: {
+    width: '100%',
     backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 10,
+    borderRadius: 15,
+    overflow: 'hidden',
+    elevation: 5,
     shadowColor: '#000',
     shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
   },
   productImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 8,
-    marginRight: 15,
+    width: '100%',
+    height: 250,
+    resizeMode: 'cover',
+  },
+  productInfo: {
+    padding: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   productTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    flex: 1,
+    color: '#333',
+    marginBottom: 5,
+    textAlign: 'center',
   },
   productPrice: {
     fontSize: 16,
     color: '#00A859',
+    fontWeight: '600',
+    marginTop: 5,
+  },
+  logoutButton: {
+    fontSize: 16,
+    color: '#FF4C4C',
+    marginRight: 15,
   },
 });
