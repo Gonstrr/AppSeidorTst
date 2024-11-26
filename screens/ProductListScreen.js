@@ -32,26 +32,25 @@ export default function ProductListScreen({ navigation }) {
 
   const fetchProducts = async () => {
     try {
+
       const response = await fetch('https://fakestoreapi.com/products');
       const data = await response.json();
       setProducts(data);
       setLoading(false);
-    } catch (err) {
+
+    } 
+    catch (err) {
       setError('Error al cargar los productos');
       setLoading(false);
+
     }
   };
 
   const renderItem = ({ item, index }) => (
     <Animatable.View
-      animation="fadeInUp"
-      delay={index * 100} // Retraso incremental para cada elemento
-      style={styles.productContainer}
-    >
-      <TouchableOpacity
-        onPress={() => navigation.navigate('ProductDetail', { productId: item.id })}
-        style={styles.productCard}
-      >
+      animation="fadeInUp" delay={index * 100} style={styles.productContainer}>
+      <TouchableOpacity onPress={() => navigation.navigate('ProductDetail', { productId: item.id })}
+        style={styles.productCard}>
         <Image source={{ uri: item.image }} style={styles.productImage} />
         <View style={styles.productInfo}>
           <Text style={styles.productTitle}>{item.title}</Text>
@@ -67,7 +66,7 @@ export default function ProductListScreen({ navigation }) {
   if (loading) {
     return (
       <ImageBackground
-        source={require('../assets/torrespaine.jpg')} // Imagen local de fondo
+        source={require('../assets/copos.jpg')} // Imagen local de fondo
         style={styles.background}
       >
         <View style={styles.centered}>
@@ -81,7 +80,7 @@ export default function ProductListScreen({ navigation }) {
   if (error) {
     return (
       <ImageBackground
-        source={require('../assets/torrespaine.jpg')} // Imagen local de fondo
+        source={require('../assets/copos.jpg')} // Imagen local de fondo
         style={styles.background}
       >
         <View style={styles.centered}>
@@ -93,7 +92,7 @@ export default function ProductListScreen({ navigation }) {
 
   return (
     <ImageBackground
-      source={require('../assets/torrespaine.jpg')} // Imagen local de fondo
+      source={require('../assets/copos.jpg')} // Imagen local de fondo
       style={styles.background}
     >
       <View style={styles.container}>
@@ -115,9 +114,9 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)', // Fondo semitransparente sobre la imagen de fondo
-    paddingHorizontal: 15,
-    paddingTop: 20,
+    backgroundColor: 'rgba(0, 10, 0, 0.4)', // Fondo semitransparente sobre la imagen de fondo
+    paddingHorizontal: 25,
+    paddingTop: 40,
   },
   listContent: {
     paddingBottom: 20,
@@ -128,7 +127,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadingText: {
-    marginTop: 10,
+    marginTop: 40,
     fontSize: 18,
     color: '#ffffff',
   },
@@ -143,6 +142,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   productCard: {
+    paddingTop: 20,
     width: '100%',
     backgroundColor: '#fff',
     borderRadius: 15,
@@ -155,8 +155,8 @@ const styles = StyleSheet.create({
   },
   productImage: {
     width: '100%',
-    height: 250,
-    resizeMode: 'cover',
+    height: 180,
+    resizeMode: 'contain', // Cambié 'cover' por 'contain' para ajustar la imagen sin distorsionarla
   },
   productInfo: {
     padding: 15,
@@ -164,14 +164,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   productTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 5,
+    marginBottom: 25,
     textAlign: 'center',
   },
   productPrice: {
-    fontSize: 16,
+    fontSize: 26,
     color: '#00A859',
     fontWeight: '600',
     marginTop: 5,
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
   productCategory: {
     fontSize: 14,
     color: '#777',
-    marginLeft: 10, // Espacio entre el precio y la categoría
+    marginLeft: 50, // Espacio entre el precio y la categoría
     fontStyle: 'italic',
   },
   logoutButton: {

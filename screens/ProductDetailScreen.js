@@ -60,7 +60,6 @@ export default function ProductDetailScreen({ route }) {
     </ScrollView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -86,21 +85,21 @@ const styles = StyleSheet.create({
   },
   productImage: {
     width: '100%',
-    height: 300,
-    borderRadius: 15,
+    height: 200,
+    borderRadius: 55,
     marginBottom: 20,
-    resizeMode: 'contain',
+    resizeMode: 'contain', // Se asegura que la imagen no se distorsione
   },
   card: {
     width: '100%',
     backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 10,
+    padding: 20,  
+    borderRadius: 15, 
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 10,
-    elevation: 3,
-    marginBottom: 20,
+    elevation: 5,  
+    marginBottom: 10,  
   },
   productTitle: {
     fontSize: 24,
@@ -110,12 +109,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   productPrice: {
-    fontSize: 20,
+    fontSize: 30,
     color: '#00A859',
     fontWeight: '600',
     textAlign: 'center',
+    marginBottom: 10,  // Espaciado entre precio y categoría
   },
-  // Nueva sección para mostrar la categoría
   productCategory: {
     fontSize: 18,
     color: '#777',
@@ -131,6 +130,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 3,
+    marginTop: 20,  // Un poco de separación entre la descripción y otros elementos
   },
   sectionTitle: {
     fontSize: 20,
