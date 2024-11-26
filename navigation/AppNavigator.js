@@ -8,7 +8,7 @@ import ProductDetailScreen from '../screens/ProductDetailScreen';  // Pantalla d
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
-  // Aquí simula si el usuario está autenticado (puedes hacerlo usando AsyncStorage o contexto global)
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {

@@ -1,108 +1,133 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, StyleSheet, Image, Alert, ImageBackground } from 'react-native';
-import * as Animatable from 'react-native-animatable';
+import React, { useState, useRef } from 'react';
+import { 
+  View, 
+  TextInput, 
+  Button, 
+  Text, 
+  StyleSheet, 
+  TouchableOpacity, // Agregamos TouchableOpacity
+  ActivityIndicator, 
+  ImageBackground, 
+  Animated 
+  
+} from 'react-native';
 
-export default function ProductListScreen({ navigation }) {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function LoginScreen({ navigation }) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const shakeAnimation = useRef(new Animated.Value(0)).current;
 
-  // Función para cerrar sesión
-  const handleLogout = () => {
-    Alert.alert(
-      "Cerrar sesión",
-      "¿Estás seguro de que deseas cerrar sesión?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Cerrar sesión",
-          onPress: () => {
-            // Aquí puedes limpiar el estado de usuario o eliminar el token de autenticación.
-            navigation.navigate("Login"); // Redirigir al Login.
-          },
-        },
-      ],
-      { cancelable: false }
-    );
-  };
+  // Función para iniciar la animación de vibración
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
 
-  const fetchProducts = async () => {
-    try {
-      const response = await fetch('https://fakestoreapi.com/products');
-      const data = await response.json();
-      setProducts(data);
+  const handleLogin = async () => {
+    // Reiniciar estados
+    setError(null);
+    setLoading(true);
+
+    // Validaciones básicas
+    if (!username || !password) {
       setLoading(false);
+      setError('Todos los campos son obligatorios.');
+      triggerShake();
+      return;
+    }
+
+    try {
+      //post para login....
+      const response = await fetch('https://fakestoreapi.com/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: username,
+          password: password,
+        }),
+      });
+
+      // Parsear la respuesta
+      const data = await response.json();
+
+      // Manejar diferentes escenarios de respuesta
+      if (response.ok) {
+
+        console.log('Login Exitoso:', data);
+
+        //manejo de navegacion si el login es exitoso... 
+        navigation.navigate('ProductList');
+      } 
+      else {
+        // Manejar específicamente errores de credenciales
+        setError('Credenciales incorrectas. Por favor, intenta de nuevo.');
+        triggerShake();
+
+      }
+
     } catch (err) {
-      setError('Error al cargar los productos');
+
+      // Manejar errores de red o del servidor
+      setError('Hubo un problema con la conexión. Intenta nuevamente.');
+      triggerShake();
+    } finally {
+      // Siempre detener el loading, independientemente del resultado
       setLoading(false);
     }
   };
 
-  const renderItem = ({ item, index }) => (
-    <Animatable.View
-      animation="fadeInUp"
-      delay={index * 100} // Retraso incremental para cada elemento
-      style={styles.productContainer}
-    >
-      <TouchableOpacity
-        onPress={() => navigation.navigate('ProductDetail', { productId: item.id })}
-        style={styles.productCard}
-      >
-        <Image source={{ uri: item.image }} style={styles.productImage} />
-        <View style={styles.productInfo}>
-          <Text style={styles.productTitle}>{item.title}</Text>
-          <View style={styles.priceCategoryContainer}>
-            <Text style={styles.productPrice}>${item.price}</Text>
-            <Text style={styles.productCategory}>{item.category}</Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    </Animatable.View>
-  );
-
-  if (loading) {
-    return (
-      <ImageBackground
-        source={require('../assets/torrespaine.jpg')} // Imagen local de fondo
-        style={styles.background}
-      >
-        <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#00A859" />
-          <Text style={styles.loadingText}>Cargando productos...</Text>
-        </View>
-      </ImageBackground>
-    );
-  }
-
-  if (error) {
-    return (
-      <ImageBackground
-        source={require('../assets/torrespaine.jpg')} // Imagen local de fondo
-        style={styles.background}
-      >
-        <View style={styles.centered}>
-          <Text style={styles.errorText}>{error}</Text>
-        </View>
-      </ImageBackground>
-    );
-  }
+  // Función para limpiar errores mientras se escribe
+  const handleTextChange = (setter) => (text) => {
+    setter(text);
+    if (error) setError(null);
+  };
 
   return (
     <ImageBackground
-      source={require('../assets/torrespaine.jpg')} // Imagen local de fondo
+      source={require('../assets/edificios.jpg')}
       style={styles.background}
     >
       <View style={styles.container}>
-        <FlatList
-          data={products}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={styles.listContent}
-        />
+        <Animated.View style={[styles.form, { transform: [{ translateX: shakeAnimation }] }]}>
+          <Text style={styles.title}>Iniciar Sesión</Text>
+
+          <TextInput
+            style={[styles.input, error && styles.inputError]}
+            placeholder="Usuario"
+            value={username}
+            onChangeText={handleTextChange(setUsername)}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+
+          <TextInput
+            style={[styles.input, error && styles.inputError]}
+            placeholder="Contraseña"
+            secureTextEntry
+            value={password}
+            onChangeText={handleTextChange(setPassword)}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+
+          {/* Botón de login o indicador de carga */}
+          {loading ? (
+            <ActivityIndicator size="large" color="#ffffff" />
+          ) : (
+            <TouchableOpacity 
+              style={styles.loginButton} 
+              onPress={handleLogin}
+            >
+              <Text style={styles.loginButtonText}>Ingresar</Text>
+            </TouchableOpacity>
+          )}
+
+          {/* Mostrar errores si los hay */}
+          {error && (
+            <Text style={styles.error}>{error}</Text>
+          )}
+        </Animated.View>
       </View>
     </ImageBackground>
   );
@@ -115,83 +140,53 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)', // Fondo semitransparente sobre la imagen de fondo
-    paddingHorizontal: 15,
-    paddingTop: 20,
-  },
-  listContent: {
-    paddingBottom: 20,
-  },
-  centered: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 20,
   },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 18,
-    color: '#ffffff',
+  form: {
+    width: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: 20,
+    borderRadius: 10,
   },
-  errorText: {
-    fontSize: 18,
-    color: '#ff0000',
+  title: {
+    fontSize: 30,
     fontWeight: 'bold',
-  },
-  productContainer: {
+    color: '#fff',
     marginBottom: 20,
-    width: '100%',
-    alignItems: 'center',
-  },
-  productCard: {
-    width: '100%',
-    backgroundColor: '#fff',
-    borderRadius: 15,
-    overflow: 'hidden',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 5 },
-  },
-  productImage: {
-    width: '100%',
-    height: 250,
-    resizeMode: 'cover',
-  },
-  productInfo: {
-    padding: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  productTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 5,
     textAlign: 'center',
   },
-  productPrice: {
+  input: {
+    width: '100%',
+    height: 45,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 15,
+    backgroundColor: '#fff',
     fontSize: 16,
-    color: '#00A859',
-    fontWeight: '600',
-    marginTop: 5,
   },
-  // Contenedor para precio y categoría
-  priceCategoryContainer: {
-    flexDirection: 'row',
+  inputError: {
+    borderColor: 'red',
+    borderWidth: 2,
+  },
+  loginButton: {
+    backgroundColor: '#0000ff',
+    padding: 12,
+    borderRadius: 5,
     alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 10,
   },
-  productCategory: {
-    fontSize: 14,
-    color: '#777',
-    marginLeft: 10, // Espacio entre el precio y la categoría
-    fontStyle: 'italic',
-  },
-  logoutButton: {
+  loginButtonText: {
+    color: 'white',
     fontSize: 16,
-    color: '#FF4C4C',
-    marginRight: 15,
+    fontWeight: 'bold',
+  },
+  error: {
+    marginTop: 15,
+    color: 'red',
+    textAlign: 'center',
+    fontSize: 16,
   },
 });
