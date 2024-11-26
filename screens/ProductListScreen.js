@@ -7,7 +7,6 @@ export default function ProductListScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Función para cerrar sesión
   const handleLogout = () => {
     Alert.alert(
       "Cerrar sesión",
@@ -17,8 +16,7 @@ export default function ProductListScreen({ navigation }) {
         {
           text: "Cerrar sesión",
           onPress: () => {
-            // Aquí puedes limpiar el estado de usuario o eliminar el token de autenticación.
-            navigation.navigate("Login"); // Redirigir al Login.
+            navigation.navigate("Login"); 
           },
         },
       ],
@@ -26,6 +24,7 @@ export default function ProductListScreen({ navigation }) {
     );
   };
 
+  
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -66,7 +65,7 @@ export default function ProductListScreen({ navigation }) {
   if (loading) {
     return (
       <ImageBackground
-        source={require('../assets/copos.jpg')} // Imagen local de fondo
+        source={require('../assets/copos.jpg')}
         style={styles.background}
       >
         <View style={styles.centered}>
@@ -80,7 +79,7 @@ export default function ProductListScreen({ navigation }) {
   if (error) {
     return (
       <ImageBackground
-        source={require('../assets/copos.jpg')} // Imagen local de fondo
+        source={require('../assets/copos.jpg')} 
         style={styles.background}
       >
         <View style={styles.centered}>
@@ -92,7 +91,7 @@ export default function ProductListScreen({ navigation }) {
 
   return (
     <ImageBackground
-      source={require('../assets/copos.jpg')} // Imagen local de fondo
+      source={require('../assets/copos.jpg')} 
       style={styles.background}
     >
       <View style={styles.container}>
@@ -114,7 +113,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: 'rgba(0, 10, 0, 0.4)', // Fondo semitransparente sobre la imagen de fondo
+    backgroundColor: 'rgba(0, 10, 0, 0.4)', 
     paddingHorizontal: 25,
     paddingTop: 40,
   },
@@ -156,7 +155,7 @@ const styles = StyleSheet.create({
   productImage: {
     width: '100%',
     height: 180,
-    resizeMode: 'contain', // Cambié 'cover' por 'contain' para ajustar la imagen sin distorsionarla
+    resizeMode: 'contain', 
   },
   productInfo: {
     padding: 15,
@@ -176,7 +175,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginTop: 5,
   },
-  // Contenedor para precio y categoría
+
   priceCategoryContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -186,7 +185,7 @@ const styles = StyleSheet.create({
   productCategory: {
     fontSize: 14,
     color: '#777',
-    marginLeft: 50, // Espacio entre el precio y la categoría
+    marginLeft: 50, 
     fontStyle: 'italic',
   },
   logoutButton: {

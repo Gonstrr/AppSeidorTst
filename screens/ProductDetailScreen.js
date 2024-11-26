@@ -14,16 +14,13 @@ export default function ProductDetailScreen({ route }) {
     try {
       const response = await fetch(`https://fakestoreapi.com/products/${productId}`);
       const data = await response.json();
-
       setProduct(data);
       setLoading(false);
-
     } catch (err) {
       console.error('Error al obtener el detalle del producto', err);
       setLoading(false);
     }
   };
-
   if (loading) {
     return (
       <View style={styles.centered}>
@@ -32,7 +29,6 @@ export default function ProductDetailScreen({ route }) {
       </View>
     );
   }
-
   if (!product) {
     return (
       <View style={styles.centered}>
@@ -40,26 +36,22 @@ export default function ProductDetailScreen({ route }) {
       </View>
     );
   }
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Image source={{ uri: product.image }} style={styles.productImage} />
-
       <View style={styles.card}>
         <Text style={styles.productTitle}>{product.title}</Text>
         <Text style={styles.productPrice}>us${product.price}</Text>
-        {/* Agregar categoría aquí */}
         <Text style={styles.productCategory}>Categoría: {product.category}</Text>
       </View>
-
       <View style={styles.descriptionCard}>
         <Text style={styles.sectionTitle}>Descripción</Text>
         <Text style={styles.productDescription}>{product.description}</Text>
       </View>
-
     </ScrollView>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -88,7 +80,7 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 55,
     marginBottom: 20,
-    resizeMode: 'contain', // Se asegura que la imagen no se distorsione
+    resizeMode: 'contain',
   },
   card: {
     width: '100%',
@@ -113,7 +105,7 @@ const styles = StyleSheet.create({
     color: '#00A859',
     fontWeight: '600',
     textAlign: 'center',
-    marginBottom: 10,  // Espaciado entre precio y categoría
+    marginBottom: 10,  
   },
   productCategory: {
     fontSize: 18,
@@ -130,7 +122,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 3,
-    marginTop: 20,  // Un poco de separación entre la descripción y otros elementos
+    marginTop: 20,  
   },
   sectionTitle: {
     fontSize: 20,

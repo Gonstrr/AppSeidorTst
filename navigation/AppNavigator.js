@@ -12,11 +12,8 @@ export default function AppNavigator() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Este useEffect simula la verificación del estado de autenticación.
-    // Por ejemplo, podrías revisar un token almacenado en AsyncStorage.
     const checkAuth = async () => {
-      // Simula una llamada de API o consulta a almacenamiento local para saber si el usuario está autenticado
-      const token = null;  // Cambia esto para probar la autenticación
+      const token = null;  
       setIsAuthenticated(!!token);
     };
     checkAuth();
@@ -26,9 +23,9 @@ export default function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
-          headerStyle: { backgroundColor: '#00A859' }, // Fondo verde para todos los encabezados
-          headerTintColor: '#fff', // Texto blanco
-          headerTitleStyle: { fontWeight: 'bold' }, // Titulo en negrita
+          headerStyle: { backgroundColor: '#00A859' },
+          headerTintColor: '#fff',
+          headerTitleStyle: { fontWeight: 'bold' },
         }}
       >
         {isAuthenticated ? (
@@ -48,7 +45,7 @@ export default function AppNavigator() {
           <Stack.Screen
             name="Login"
             component={LoginScreen}
-            options={{ headerShown: false }} // No mostrar encabezado en la pantalla de login
+            options={{ headerShown: false }}
           />
         )}
       </Stack.Navigator>

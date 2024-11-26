@@ -1,6 +1,6 @@
 // context/AuthContext.js
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { AsyncStorage } from 'react-native'; // Usamos AsyncStorage para la persistencia
+import { AsyncStorage } from 'react-native'; 
 
 const AuthContext = createContext();
 
@@ -11,44 +11,35 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // Para manejar la carga inicial
-  const [error, setError] = useState(null); // Para manejar los errores de autenticación
+  const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState(null); 
 
-
-
-  // Función para cargar los datos de usuario persistidos (si existen)
   useEffect(() => {
     const loadUser = async () => {
-
       try {
 
         const storedUser = await AsyncStorage.getItem('user');
         if (storedUser) {
-          setUser(JSON.parse(storedUser)); // Si existe, seteamos el usuario
+          setUser(JSON.parse(storedUser)); 
         }
       } 
       catch (err) {
         console.error("Error al cargar el usuario:", err);
       } 
       finally {
-        setLoading(false); // Terminamos la carga
+        setLoading(false);
       }
     };
-
     loadUser();
   }, []);
 
 
 
-
-
   const login = async (userData) => {
-
     try 
     {
-      setLoading(true); // Mientras estamos autenticando, mostramos el loading
-      setError(null); // Limpiamos cualquier error anterior
-
+      setLoading(true); 
+      setError(null); 
       await AsyncStorage.setItem('user', JSON.stringify(userData));
       setUser(userData); 
     } 
@@ -60,11 +51,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Función para cerrar sesión
+
   const logout = async () => {
     try {
-      await AsyncStorage.removeItem('user'); // Eliminamos el usuario del almacenamiento
-      setUser(null); // Limpiamos el estado del usuario
+      await AsyncStorage.removeItem('user'); 
+      setUser(null); 
     } 
     catch (err) {
 

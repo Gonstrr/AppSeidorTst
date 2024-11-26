@@ -19,15 +19,10 @@ export default function LoginScreen({ navigation }) {
   const [error, setError] = useState(null);
   const shakeAnimation = useRef(new Animated.Value(0)).current;
 
-  // Función para iniciar la animación de vibración
-
-
   const handleLogin = async () => {
-    // Reiniciar estados
     setError(null);
     setLoading(true);
 
-    // Validaciones básicas
     if (!username || !password) {
       setLoading(false);
       setError('Todos los campos son obligatorios.');
@@ -36,7 +31,6 @@ export default function LoginScreen({ navigation }) {
     }
 
     try {
-      //post para login....
       const response = await fetch('https://fakestoreapi.com/auth/login', {
         method: 'POST',
         headers: {
@@ -47,37 +41,25 @@ export default function LoginScreen({ navigation }) {
           password: password,
         }),
       });
-
-      // Parsear la respuesta
       const data = await response.json();
-
-      // Manejar diferentes escenarios de respuesta
       if (response.ok) {
-
         console.log('Login Exitoso:', data);
-
-        //manejo de navegacion si el login es exitoso... 
         navigation.navigate('ProductList');
       } 
       else {
-        // Manejar específicamente errores de credenciales
         setError('Credenciales incorrectas. Por favor, intenta de nuevo.');
         triggerShake();
 
       }
 
     } catch (err) {
-
-      // Manejar errores de red o del servidor
       setError('Hubo un problema con la conexión. Intenta nuevamente.');
       triggerShake();
     } finally {
-      // Siempre detener el loading, independientemente del resultado
       setLoading(false);
     }
   };
-
-  // Función para limpiar errores mientras se escribe
+  
   const handleTextChange = (setter) => (text) => {
     setter(text);
     if (error) setError(null);
