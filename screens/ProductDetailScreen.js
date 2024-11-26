@@ -12,7 +12,6 @@ export default function ProductDetailScreen({ route }) {
 
   const fetchProductDetail = async () => {
     try {
-      
       const response = await fetch(`https://fakestoreapi.com/products/${productId}`);
       const data = await response.json();
 
@@ -43,17 +42,21 @@ export default function ProductDetailScreen({ route }) {
   }
 
   return (
-    
     <ScrollView contentContainerStyle={styles.container}>
       <Image source={{ uri: product.image }} style={styles.productImage} />
+
       <View style={styles.card}>
         <Text style={styles.productTitle}>{product.title}</Text>
-        <Text style={styles.productPrice}>${product.price}</Text>
+        <Text style={styles.productPrice}>us${product.price}</Text>
+        {/* Agregar categoría aquí */}
+        <Text style={styles.productCategory}>Categoría: {product.category}</Text>
       </View>
+
       <View style={styles.descriptionCard}>
         <Text style={styles.sectionTitle}>Descripción</Text>
         <Text style={styles.productDescription}>{product.description}</Text>
       </View>
+
     </ScrollView>
   );
 }
@@ -110,6 +113,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#00A859',
     fontWeight: '600',
+    textAlign: 'center',
+  },
+  // Nueva sección para mostrar la categoría
+  productCategory: {
+    fontSize: 18,
+    color: '#777',
+    marginTop: 10,
     textAlign: 'center',
   },
   descriptionCard: {

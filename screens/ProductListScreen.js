@@ -55,7 +55,10 @@ export default function ProductListScreen({ navigation }) {
         <Image source={{ uri: item.image }} style={styles.productImage} />
         <View style={styles.productInfo}>
           <Text style={styles.productTitle}>{item.title}</Text>
-          <Text style={styles.productPrice}>${item.price}</Text>
+          <View style={styles.priceCategoryContainer}>
+            <Text style={styles.productPrice}>${item.price}</Text>
+            <Text style={styles.productCategory}>{item.category}</Text>
+          </View>
         </View>
       </TouchableOpacity>
     </Animatable.View>
@@ -172,6 +175,19 @@ const styles = StyleSheet.create({
     color: '#00A859',
     fontWeight: '600',
     marginTop: 5,
+  },
+  // Contenedor para precio y categoría
+  priceCategoryContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
+  },
+  productCategory: {
+    fontSize: 14,
+    color: '#777',
+    marginLeft: 10, // Espacio entre el precio y la categoría
+    fontStyle: 'italic',
   },
   logoutButton: {
     fontSize: 16,
